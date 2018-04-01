@@ -3,56 +3,59 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+define("PALABRA", "OIE");
 
 class SopaController extends Controller
 {
+	//Retorna vista principal
 	public function index()
 	{
 		return view("welcome");
 	}
 
-    public function opcion1 ()
+	//Recibe una opcion de matriz y calcula en base a la opcion
+    public function enviarMatriz (Request $request)
     {
-    	$miArray = 	[
+
+    	$opcion = $request->opcion;
+
+    	switch ($opcion) {
+    		case '1':
+
+    			$matriz1 = 	[
     					["O","I","E"],
     					["I","I","X"],
     					["E","X","E"]
     				];
 
-    	$cantidad = $this->buscarPalabra($miArray);
+    			$cantidad = $this->buscarPalabra($matriz1);
 
-    	return view("welcome",compact("cantidad"));
-    }
+    			break;
+    		case '2':
 
-    public function opcion2 ()
-    {
-    	$miArray = 	[
+    			$matriz2 = 	[
     					["E","I","O","I","E","I","O","E","I","O"]
     				];
 
-    	$cantidad = $this->buscarPalabra($miArray);
+    			$cantidad = $this->buscarPalabra($matriz2);
 
-    	return view("welcome",compact("cantidad"));	
-    }
+    			break;
+    		case '3':
 
-    public function opcion3 ()
-    {
-    	$miArray = 	[
+    			$matriz3 = 	[
     					["E","A","E","A","E"],
     					["A","I","I","I","A"],
     					["E","I","O","I","E"],
     					["A","I","I","I","A"],
     					["E","A","E","A","E"]
     				];
+    			
+    			$cantidad = $this->buscarPalabra($matriz3);
 
-    	$cantidad = $this->buscarPalabra($miArray);
+    			break;
+    		case '4':
 
-    	return view("welcome",compact("cantidad"));
-    }
-
-    public function opcion4 ()
-    {
-    	$miArray = 	[
+    			$matriz4 = 	[
     					["O","X"],
     					["I","O"],
     					["E","X"],
@@ -61,12 +64,19 @@ class SopaController extends Controller
     					["I","E"],
     					["E","X"]
     				];
+    			
+    			$cantidad = $this->buscarPalabra($matriz4);
 
-    	$cantidad = $this->buscarPalabra($miArray);
+    			break;
+    		default:
+    			# code...
+    			break;
+    	}
 
-    	return view("welcome",compact("cantidad"));
+    	return $cantidad;
     }
 
+    //Funcion que busca la palabra en los 8 sentidos posibles
     public function buscarPalabra($array)
     {
 
@@ -76,6 +86,7 @@ class SopaController extends Controller
     	$filaMatriz = count( $array );
 		$columnaMatriz = max(array_map('count', $array));
 
+		//Iteracion que busca la palabra de izquierda a derecha
 		for($fila = 0; $fila < $filaMatriz; $fila++)
 		{
 			for($columna = 0; $columna < $columnaMatriz; $columna++)
@@ -86,13 +97,14 @@ class SopaController extends Controller
 				{
 				 	
 					$strUnido = implode($arrayHorizontal);
-			 		$contPalabra += substr_count($strUnido,"OIE");
+			 		$contPalabra += substr_count($strUnido,PALABRA);
 					$strUnido = strrev($strUnido);
-			 		$contPalabra += substr_count($strUnido,"OIE");
+			 		$contPalabra += substr_count($strUnido,PALABRA);
 				}
 			}
 		}
 
+		//Iteracion que busca la palaba de arriba hacia abajo
     	for($columna = 0; $columna < $columnaMatriz; $columna++)
 		{
 			for($fila = 0; $fila < $filaMatriz; $fila++)
@@ -102,15 +114,14 @@ class SopaController extends Controller
 				if($fila+1 >= $filaMatriz)
 				{					 	
 					$strUnido = implode($arrayVertical);
-			 		$contPalabra += substr_count($strUnido,"OIE");
+			 		$contPalabra += substr_count($strUnido,PALABRA);
 				 	$strUnido = strrev($strUnido);
-			 		$contPalabra += substr_count($strUnido,"OIE");
+			 		$contPalabra += substr_count($strUnido,PALABRA);
 				}
 			}
 		}
 
-		////////////////////////////////////////////////////////////////////////////////////////
-
+		//Condicion para calcular en base al ancho/alto de la matriz
 		if($filaMatriz >= 3 && $columnaMatriz >= 3)
 		{
 
@@ -119,6 +130,8 @@ class SopaController extends Controller
 			$vectorvacio=[];
 			$contador = 0;
 
+			//Iteracion que recorre la matriz en diagonal de izquierda a derecha
+			//Recorre la primera mitad, ambos sentidos.
 			for($i=$c; $i>=0; $i--)
 			{
 			    $y=$i;
@@ -133,13 +146,15 @@ class SopaController extends Controller
 			    }
 
 			    $strUnido = implode($vectorvacio);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 				$strUnido = strrev($strUnido);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 			    $vectorvacio=[];
 				$contador = 0;
 			}
 
+			//Iteracion que recorre la matriz en diagonal de izquierda a derecha
+			//Recorre la segunda mitad, ambos sentidos
 			for($i=1;$i<=$r;$i++)
 			{
 			    $x=$i;
@@ -154,13 +169,15 @@ class SopaController extends Controller
 			    }
 
 			    $strUnido = implode($vectorvacio);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 				$strUnido = strrev($strUnido);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 			    $vectorvacio=[];
 				$contador = 0;
 			}
 
+			//Iteracion que recorre la matriz en diagonal de derecha a izquierda
+			//Recorre la primera mitad, ambos sentidos.
 			for($i=0;$i<$c;$i++)
 			{
 			    $y=$i;
@@ -175,13 +192,15 @@ class SopaController extends Controller
 			    }
 
 			    $strUnido = implode($vectorvacio);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 				$strUnido = strrev($strUnido);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 			    $vectorvacio=[];
 				$contador = 0;
 			}
 
+			//Iteracion que recorre la matriz en diagonal de derecha a izquierda
+			//Recorre la segunda mitad, ambos sentidos.
 			for($i=1;$i<$r;$i++)
 			{
 			    $x=$i;
@@ -196,9 +215,9 @@ class SopaController extends Controller
 			    }
 
 			    $strUnido = implode($vectorvacio);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 				$strUnido = strrev($strUnido);
-		 		$contPalabra += substr_count($strUnido,"OIE");
+		 		$contPalabra += substr_count($strUnido,PALABRA);
 			    $vectorvacio=[];
 				$contador = 0;
 			}
